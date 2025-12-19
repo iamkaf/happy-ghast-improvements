@@ -7,6 +7,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
+/**
+ * Mixin to boost Happy Ghast movement speed when they have the Speed effect.
+ * Speed boost: 100% + 100% per effect level (Speed I = 2x, Speed II = 3x, etc.)
+ * This makes sugar-fed and honey-fed Happy Ghasts significantly faster.
+ */
 @Mixin(HappyGhast.class)
 public class HappyGhastSpeedMixin {
 
@@ -15,7 +20,7 @@ public class HappyGhastSpeedMixin {
         at = @At("STORE"),
         ordinal = 0
     )
-    private float modifyTravelSpeed(float originalSpeed) {
+    private float happyghastimprovements$modifyTravelSpeed(float originalSpeed) {
         HappyGhast ghast = (HappyGhast)(Object)this;
 
         if (ghast.hasEffect(MobEffects.SPEED)) {
