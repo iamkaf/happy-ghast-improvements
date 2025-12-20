@@ -6,7 +6,9 @@
   "compatibilityLevel": "JAVA_18",
   "mixins": [
     "HappyGhastMixin",
-    "HappyGhastSpeedMixin"
+    "HappyGhastSpeedMixin",
+    "HappyGhastReachMixin",
+    "HappyGhastEffectRemovalMixin"
   ],
   "client": [
   ],

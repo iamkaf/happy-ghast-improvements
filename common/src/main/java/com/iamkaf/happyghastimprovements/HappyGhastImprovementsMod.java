@@ -3,7 +3,6 @@ package com.iamkaf.happyghastimprovements;
 import com.iamkaf.happyghastimprovements.platform.Services;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -17,6 +16,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+
+import com.iamkaf.amber.api.core.v2.AmberInitializer;
 import com.iamkaf.amber.api.event.v1.events.common.PlayerEvents;
 
 /**
@@ -31,6 +32,8 @@ public class HappyGhastImprovementsMod {
     public static void init() {
         HappyGhastImprovementsConstants.LOG.info("Initializing {} on {}...", HappyGhastImprovementsConstants.MOD_NAME,
                 Services.PLATFORM.getPlatformName());
+        
+        AmberInitializer.initialize(HappyGhastImprovementsConstants.MOD_ID);
 
         PlayerEvents.ENTITY_INTERACT.register(HappyGhastImprovementsMod::onPlayerEntityInteract);
     }
@@ -51,12 +54,16 @@ public class HappyGhastImprovementsMod {
 
         if (item.is(Items.SUGAR)) {
             // Sugar gives Speed II (amplifier 1)
-            amplifier = 1;
+            amplifier = HappyGhastImprovementsConstants.SUGAR_SPEED_AMPLIFIER;
             foodName = "sugar";
         } else if (item.is(Items.HONEY_BOTTLE)) {
             // Honey gives Speed III (amplifier 2)
-            amplifier = 2;
+            amplifier = HappyGhastImprovementsConstants.HONEY_SPEED_AMPLIFIER;
             foodName = "honey";
+        } else if (item.is(Items.DRAGON_BREATH)) {
+            // Dragon's Breath gives Speed IV (amplifier 3)
+            amplifier = HappyGhastImprovementsConstants.DRAGON_BREATH_SPEED_AMPLIFIER;
+            foodName = "dragon breath";
         } else {
             return false;
         }
@@ -73,27 +80,32 @@ public class HappyGhastImprovementsMod {
                 item.shrink(1);
             }
 
-            // Give the Happy Ghast a speed effect for 30 seconds (600 ticks)
-            ghast.addEffect(new MobEffectInstance(MobEffects.SPEED, 600, amplifier));
+            // Give the Happy Ghast a speed effect
+            ghast.addEffect(new MobEffectInstance(MobEffects.SPEED, HappyGhastImprovementsConstants.SPEED_EFFECT_DURATION, amplifier));
 
-            BlockPos pos = player.blockPosition();
-            // Play different sounds for sugar vs honey
-            var soundEvent = foodName.equals("sugar")
-                ? SoundEvents.GENERIC_EAT
-                : SoundEvents.HONEY_DRINK;
-            player.level().playSound(null, ghast.blockPosition(), soundEvent.value(), SoundSource.NEUTRAL);
+            // Play different sounds for different foods
+            if (foodName.equals("dragon breath")) {
+                player.level().playSound(null, ghast.blockPosition(), SoundEvents.DRAGON_FIREBALL_EXPLODE, SoundSource.NEUTRAL);
+            } else {
+                var soundEvent = foodName.equals("sugar")
+                    ? SoundEvents.GENERIC_EAT
+                    : SoundEvents.HONEY_DRINK;
+                player.level().playSound(null, ghast.blockPosition(), soundEvent.value(), SoundSource.NEUTRAL);
+            }
 
+            // Send server-side particles
+            BlockPos playerPos = player.blockPosition();
             if (player.level() instanceof ServerLevel serverLevel) {
                 serverLevel.sendParticles(
-                        ParticleTypes.CLOUD,
-                        pos.getX() + 0.5d,
-                        pos.getY() + 1,
-                        pos.getZ() + 0.5d,
-                        80,
-                        0.01d,
-                        0.5d,
-                        0.01d,
-                        0.05d);
+                        HappyGhastImprovementsConstants.FEED_PARTICLE_TYPE,
+                        playerPos.getX() + HappyGhastImprovementsConstants.PARTICLE_OFFSET_X,
+                        playerPos.getY() + HappyGhastImprovementsConstants.PARTICLE_OFFSET_Y,
+                        playerPos.getZ() + HappyGhastImprovementsConstants.PARTICLE_OFFSET_Z,
+                        HappyGhastImprovementsConstants.FEED_PARTICLE_COUNT,
+                        HappyGhastImprovementsConstants.PARTICLE_SPEED,
+                        HappyGhastImprovementsConstants.PARTICLE_SPEED,
+                        HappyGhastImprovementsConstants.PARTICLE_SPEED,
+                        HappyGhastImprovementsConstants.PARTICLE_SPEED);
             }
         }
         return true;

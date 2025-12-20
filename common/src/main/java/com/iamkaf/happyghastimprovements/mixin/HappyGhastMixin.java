@@ -1,5 +1,6 @@
 package com.iamkaf.happyghastimprovements.mixin;
 
+import com.iamkaf.happyghastimprovements.HappyGhastImprovementsConstants;
 import net.minecraft.world.entity.animal.HappyGhast;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,14 +17,11 @@ public class HappyGhastMixin {
 
     @Inject(method = "getAmbientSoundInterval", at = @At("HEAD"), cancellable = true)
     private void happyghastimprovements$getAmbientSoundInterval(CallbackInfoReturnable<Integer> cir) {
-        int baseInterval = 720; // 36 seconds (720 ticks) normally
-        int riddenInterval = 1200; // 60 seconds (1200 ticks) when being ridden
-
         // Return the appropriate interval based on whether the ghast is being ridden
         if (((HappyGhast)(Object)this).isVehicle()) {
-            cir.setReturnValue(riddenInterval);
+            cir.setReturnValue(HappyGhastImprovementsConstants.RIDDEN_AMBIENT_SOUND_INTERVAL);
         } else {
-            cir.setReturnValue(baseInterval);
+            cir.setReturnValue(HappyGhastImprovementsConstants.NORMAL_AMBIENT_SOUND_INTERVAL);
         }
     }
 }
