@@ -1,7 +1,7 @@
 package com.iamkaf.happyghastimprovements.mixin;
 
 import com.iamkaf.happyghastimprovements.HappyGhastImprovementsConstants;
-import net.minecraft.world.entity.animal.HappyGhast;
+import net.minecraft.world.entity.animal.happyghast.HappyGhast;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

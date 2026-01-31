@@ -11,7 +11,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.animal.HappyGhast;
+import net.minecraft.world.entity.animal.happyghast.HappyGhast;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -73,7 +73,7 @@ public class HappyGhastImprovementsMod {
                     "{} fed {} to a Happy Ghast in level {}",
                     player.getName().getString(),
                     foodName,
-                    ghast.level().dimension().location());
+                    ghast.level().dimension().identifier());
 
             // Don't consume items in creative mode
             if (!player.getAbilities().instabuild) {

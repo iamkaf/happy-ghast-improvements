@@ -1,7 +1,7 @@
 package com.iamkaf.happyghastimprovements.mixin;
 
 import com.iamkaf.happyghastimprovements.HappyGhastImprovementsConstants;
-import net.minecraft.world.entity.animal.HappyGhast;
+import net.minecraft.world.entity.animal.happyghast.HappyGhast;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.effect.MobEffectInstance;
 import org.spongepowered.asm.mixin.Mixin;
