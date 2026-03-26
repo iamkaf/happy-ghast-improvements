@@ -28,7 +28,6 @@ Feed Happy Ghasts to give them temporary speed boosts with different power level
 
 ## Compatibility
 
-- Minecraft: 1.21.10
 - Loaders: Fabric, NeoForge
 - Dependencies: Amber
 
