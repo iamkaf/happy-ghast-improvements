@@ -29,7 +29,7 @@ Feed Happy Ghasts to give them temporary speed boosts with different power level
 ## Compatibility
 
 - Loaders: Fabric, NeoForge
-- Dependencies: Amber
+- Dependencies: Amber, Konfig
 
 ## How to Use
 
@@ -40,7 +40,7 @@ Feed Happy Ghasts to give them temporary speed boosts with different power level
 
 ## Technical Details
 
-This mod uses mixins to modify Happy Ghast behavior and platform-specific events for item usage detection with multi-loader architecture for broad compatibility.
+This mod uses mixins to modify Happy Ghast behavior, Konfig for gameplay tuning, and platform-specific events for item usage detection.
 
 ## Directory Layout
 
