@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ported to Minecraft 26.1 for Fabric and NeoForge.
 - Added a Konfig config for ambient sounds, feeding boosts, and riding reach.
 
+## 2.0.0+1.21.11
+
+### Changed
+
+- Backported the v2 Konfig config for ambient sounds, feeding boosts, and riding reach to 1.21.11.
+
 ## 1.0.0+1.21.10
 
 ### Added

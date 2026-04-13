@@ -1,0 +1,12 @@
+plugins {
+    id 'com.iamkaf.multiloader.fabric'
+}
+
+dependencies {
+    modImplementation libs.fabric.api
+    modImplementation libs.modmenu
+    modImplementation libs.amber.fabric
+    modImplementation libs.konfig.fabric
+}
+
+enableCommonFabricDatagen.call()
