@@ -1,0 +1,19 @@
+plugins {
+    id 'com.iamkaf.multiloader.neoforge'
+}
+
+def minecraftVersion = requiredProp(project, 'project.minecraft')
+def libs = catalogFor(project, minecraftVersion)
+def useTeaKit = providers.systemProperty('happyghastimprovements.withTeaKit')
+    .orElse(providers.gradleProperty('happyghastimprovements.withTeaKit'))
+    .map { it.toBoolean() }
+    .orElse(false)
+    .get()
+
+dependencies {
+    implementation library(libs, 'amber-neoforge')
+    implementation library(libs, 'konfig-neoforge')
+    if (useTeaKit) {
+        runtimeOnly library(libs, 'teakit-neoforge')
+    }
+}
