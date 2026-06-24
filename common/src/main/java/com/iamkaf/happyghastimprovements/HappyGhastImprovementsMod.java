@@ -18,7 +18,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
 import com.iamkaf.amber.api.core.v2.AmberInitializer;
-import com.iamkaf.amber.api.event.v1.events.common.PlayerEvents;
 
 /**
  * Common entry point for the mod.
@@ -35,11 +34,9 @@ public class HappyGhastImprovementsMod {
         
         AmberInitializer.initialize(HappyGhastImprovementsConstants.MOD_ID);
         HappyGhastImprovementsConfig.init();
-
-        PlayerEvents.ENTITY_INTERACT.register(HappyGhastImprovementsMod::onPlayerEntityInteract);
     }
 
-    public static InteractionResult onPlayerEntityInteract(Player player, Level level, InteractionHand hand,
+    public static InteractionResult tryFeedTargetEntity(Player player, Level level, InteractionHand hand,
             Entity entity) {
         if (!(entity instanceof HappyGhast ghast)) {
             return InteractionResult.PASS;

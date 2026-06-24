@@ -2,6 +2,7 @@ package com.iamkaf.happyghastimprovements;
 
 import com.iamkaf.happyghastimprovements.HappyGhastImprovementsConstants;
 import com.iamkaf.happyghastimprovements.HappyGhastImprovementsMod;
+import net.minecraft.world.InteractionResult;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -14,6 +15,18 @@ public class HappyGhastImprovementsNeoForge {
         HappyGhastImprovementsMod.init();
         // Register to the NeoForge game event bus
         NeoForge.EVENT_BUS.register(this);
+    }
+
+    @SubscribeEvent
+    public void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
+        InteractionResult result = HappyGhastImprovementsMod.tryFeedTargetEntity(
+                event.getEntity(), event.getEntity().level(), event.getHand(), event.getTarget());
+        if (result == InteractionResult.PASS) {
+            return;
+        }
+
+        event.setCancellationResult(result);
+        event.setCanceled(true);
     }
 
     @SubscribeEvent
