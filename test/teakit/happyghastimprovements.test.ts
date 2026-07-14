@@ -1,15 +1,9 @@
-import { Capability, Readiness, describe, expect, test } from "@teakit/test";
-import type { ScenarioDefinition, TeaKitTestContext } from "@teakit/test";
-
-type Position = {
-  x: number;
-  y: number;
-  z: number;
-};
+import { Capability, Readiness, describe, expect, pos, test } from "@teakit/test";
+import type { TeaKitTestContext, TeaKitPosition } from "@teakit/test";
 
 type FoodCase = {
   name: string;
-  item: string;
+  item: `${string}:${string}`;
   amplifier: number;
   expectedRemaining: number;
 };
@@ -18,8 +12,9 @@ describe.configure({
   timeout: "4m",
   readiness: [Readiness.ClientReady, Readiness.IntegratedServerReady, Readiness.PlayerSpawned],
   capabilities: [
-    Capability.PlayerActions,
-    Capability.LegacyJsonScenarios,
+    Capability.ClientScreens,
+    Capability.PlayerInteractions,
+    Capability.WorldEntities,
     Capability.RuntimeTiming,
     Capability.ServerCommands,
   ],
@@ -51,7 +46,7 @@ describe("Happy Ghast Improvements", () => {
   });
 
   test("using food while mounted feeds the ridden happy ghast", async (ctx) => {
-    await prepareHappyGhast(ctx, { x: 0, y: 80, z: 2 });
+    await prepareHappyGhast(ctx, pos(0, 80, 2));
     await ctx.commands.assert("/item replace entity @s weapon.mainhand with minecraft:sugar 2");
     await ctx.commands.assert("/ride @s mount @e[type=minecraft:happy_ghast,distance=..8,limit=1,sort=nearest]");
 
@@ -69,12 +64,15 @@ describe("Happy Ghast Improvements", () => {
 });
 
 async function assertGroundFeeding(ctx: TeaKitTestContext, food: FoodCase) {
-  await prepareHappyGhast(ctx, { x: 0, y: 80, z: 2 });
+  await prepareHappyGhast(ctx, pos(0, 80, 2));
   await ctx.commands.assert(`/item replace entity @s weapon.mainhand with ${food.item} 2`);
 
   try {
-    const result = await ctx.scenario.run(groundFeedDefinition(food.name), { timeoutMs: 10_000 });
-    expect(result.error ?? null).toBeNull();
+    await ctx.client.closeMenus();
+    const ghasts = ctx.entities.query({ type: "minecraft:happy_ghast", origin: pos(0, 80, 0), radius: 8 });
+    const ghast = (await ghasts.waitForCount(1, { timeoutMs: 5_000 }))[0];
+    await ctx.player.lookAt(pos(0.5, 81.5, 2.5));
+    await ctx.player.useItemOnEntity(ghast, food.item);
     await ctx.runtime.wait(500, { timeoutMs: 2_000 });
 
     await assertMainHandCount(ctx, food.item, food.expectedRemaining);
@@ -84,7 +82,7 @@ async function assertGroundFeeding(ctx: TeaKitTestContext, food: FoodCase) {
   }
 }
 
-async function prepareHappyGhast(ctx: TeaKitTestContext, position: Position) {
+async function prepareHappyGhast(ctx: TeaKitTestContext, position: TeaKitPosition) {
   await cleanup(ctx);
   await ctx.commands.run("/difficulty peaceful");
   await ctx.commands.run("/gamemode survival @s");
@@ -135,24 +133,4 @@ function commandOutput(result: unknown): string {
   }
 
   return JSON.stringify(result);
-}
-
-function groundFeedDefinition(foodName: string): ScenarioDefinition {
-  return {
-    name: `happyghastimprovements-feed-${foodName.replaceAll(" ", "-")}`,
-    steps: [
-      { action: "wait_for_no_screen", timeoutMs: 5_000, pollMs: 100 },
-      {
-        action: "wait_for_entity_count",
-        radius: 8,
-        entityType: "minecraft:happy_ghast",
-        count: 1,
-        timeoutMs: 5_000,
-      },
-      { action: "look_at", x: 0.5, y: 81.5, z: 2.5 },
-      { action: "wait_ms", durationMs: 200 },
-      { action: "interact_nearest_entity", radius: 8, entityType: "minecraft:happy_ghast", hand: "main_hand" },
-      { action: "wait_ms", durationMs: 300 },
-    ],
-  } as ScenarioDefinition;
 }
