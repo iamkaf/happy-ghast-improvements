@@ -72,7 +72,7 @@ async function assertGroundFeeding(ctx: TeaKitTestContext, food: FoodCase) {
     const ghasts = ctx.entities.query({ type: "minecraft:happy_ghast", origin: pos(0, 80, 0), radius: 8 });
     const ghast = (await ghasts.waitForCount(1, { timeoutMs: 5_000 }))[0];
     await ctx.player.lookAt(pos(0.5, 81.5, 2.5));
-    await ctx.player.useItemOnEntity(ghast, food.item);
+    await ctx.player.useItemOnEntity(ghast);
     await ctx.runtime.wait(500, { timeoutMs: 2_000 });
 
     await assertMainHandCount(ctx, food.item, food.expectedRemaining);
