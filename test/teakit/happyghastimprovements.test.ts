@@ -14,6 +14,7 @@ describe.configure({
   capabilities: [
     Capability.ClientScreens,
     Capability.PlayerInteractions,
+    Capability.PlayerInventory,
     Capability.WorldEntities,
     Capability.RuntimeTiming,
     Capability.ServerCommands,
@@ -69,6 +70,7 @@ async function assertGroundFeeding(ctx: TeaKitTestContext, food: FoodCase) {
 
   try {
     await ctx.client.closeMenus();
+    await ctx.player.inventory().waitForItem(food.item, { selected: true, count: 2, timeout: "5s" });
     const ghasts = ctx.entities.query({ type: "minecraft:happy_ghast", origin: pos(0, 80, 0), radius: 8 });
     const ghast = (await ghasts.waitForCount(1, { timeoutMs: 5_000 }))[0];
     await ctx.player.lookAt(pos(0.5, 81.5, 2.5));
@@ -85,12 +87,13 @@ async function assertGroundFeeding(ctx: TeaKitTestContext, food: FoodCase) {
 async function prepareHappyGhast(ctx: TeaKitTestContext, position: TeaKitPosition) {
   await cleanup(ctx);
   await ctx.commands.run("/difficulty peaceful");
-  await ctx.commands.run("/gamemode survival @s");
+  await ctx.commands.run("/gamemode creative @s");
   await ctx.commands.run("/effect give @s minecraft:saturation 5 10 true");
   await ctx.commands.run("/effect give @s minecraft:resistance 5 10 true");
   await ctx.commands.run("/fill -2 79 -2 2 79 4 minecraft:stone replace");
   await ctx.commands.run("/fill -2 80 -2 2 84 4 minecraft:air replace");
-  await ctx.commands.run("/tp @s 0.5 80 0.5");
+  await ctx.player.teleport(pos(0.5, 80, 0.5));
+  await ctx.commands.run("/gamemode survival @s");
 
   await ctx.commands.assert(`/summon minecraft:happy_ghast ${position.x} ${position.y} ${position.z} {NoAI:1b}`);
   await ctx.runtime.wait(1_000, { timeoutMs: 2_000 });
@@ -114,8 +117,8 @@ async function assertHappyGhastSpeed(ctx: TeaKitTestContext, amplifier: number) 
 
 async function cleanup(ctx: TeaKitTestContext) {
   await ctx.commands.run("/clear @s");
-  await ctx.commands.run("/kill @e[type=minecraft:happy_ghast,distance=..32]");
-  await ctx.commands.run("/kill @e[type=minecraft:item,distance=..32]");
+  await ctx.entities.query({ type: "minecraft:happy_ghast", origin: pos(0, 80, 2), radius: 32 }).removeAll();
+  await ctx.entities.query({ type: "minecraft:item", origin: pos(0, 80, 2), radius: 32 }).removeAll();
   await ctx.commands.run("/fill -2 79 -2 2 84 4 minecraft:air replace");
 }
 
